@@ -1,8 +1,8 @@
-cmake_minimum_required(VERSION 2.8.3)
-project(model_distance_from_height)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8.3)
+PROJECT(neural_network_msgs)
 
 IF(NOT CMAKE_BUILD_TYPE)
-  SET(CMAKE_BUILD_TYPE Release)
+  SET(CMAKE_BUILD_TYPE "Release")
 ENDIF()
 
 MESSAGE("Build type: " ${CMAKE_BUILD_TYPE})
@@ -10,8 +10,8 @@ MESSAGE("Build type: " ${CMAKE_BUILD_TYPE})
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -O3")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O3")
 
-include(CheckCXXCompilerFlag)
 # Check C++11 or C++0x support
+include(CheckCXXCompilerFlag)
 CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
 CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
 if(COMPILER_SUPPORTS_CXX11)
@@ -26,26 +26,21 @@ else()
    message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
 endif()
 
-## Third party modules
-FIND_PACKAGE(cmake_modules REQUIRED)
-FIND_PACKAGE(OpenCV REQUIRED)
-INCLUDE_DIRECTORIES(${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
-MESSAGE(STATUS "OpenCV_INCLUDE_DIRS   =      " ${OpenCV_INCLUDE_DIRS})
+
+
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS
-  geometry_msgs
-  image_geometry
-  neural_network_msgs
+FIND_PACKAGE(catkin REQUIRED COMPONENTS
+  cv_bridge
+  image_transport
   roscpp
-  tf2_ros
   sensor_msgs
-  pose_cov_ops
-  pose_cov_ops_interface
-  dynamic_reconfigure
-)
+  std_msgs
+  message_generation
+  message_filters
+  )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -81,11 +76,10 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
+ADD_MESSAGE_FILES(
+  DIRECTORY msg
+  FILES NeuralNetworkDetection.msg NeuralNetworkDetectionArray.msg NeuralNetworkFeedback.msg NeuralNetworkNumberOfDetections.msg
+)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -102,10 +96,11 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   geometry_msgs
-# )
+GENERATE_MESSAGES(
+  DEPENDENCIES
+  std_msgs
+  neural_network_msgs
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -122,9 +117,10 @@ find_package(catkin REQUIRED COMPONENTS
 ##     and list every .cfg file to be processed
 
 ## Generate dynamic reconfigure parameters in the 'cfg' folder
-generate_dynamic_reconfigure_options(
-  cfg/ModelParameters.cfg
-)
+# generate_dynamic_reconfigure_options(
+#   cfg/DynReconf1.cfg
+#   cfg/DynReconf2.cfg
+# )
 
 ###################################
 ## catkin specific configuration ##
@@ -135,11 +131,10 @@ generate_dynamic_reconfigure_options(
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
-catkin_package(
-  INCLUDE_DIRS include
-#  LIBRARIES model_distance_from_height
-#  CATKIN_DEPENDS geometry_msgs image_geometry neural_network_detector roscpp
-#  DEPENDS system_lib
+
+CATKIN_PACKAGE(
+  CATKIN_DEPENDS message_runtime std_msgs
+  #  DEPENDS system_lib
 )
 
 ###########
@@ -149,16 +144,10 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 # include_directories(include)
-include_directories(
-  include
-  ${catkin_INCLUDE_DIRS}
-  ${OpenCV_INCLUDE_DIRS}
-)
 
 ## Declare a C++ library
-# add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/model_distance_from_height.cpp
-# )
+#ADD_LIBRARY(NNClient
+#  src/NNClient.cpp include/neural_network_detector/NNClient.h)
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -168,12 +157,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(${PROJECT_NAME}_node
-  src/Projector.cpp include/model_distance_from_height/Projector.h
-  include/model_distance_from_height/models/ModelBase.h
-  #src/models/Model2D.cpp include/model_distance_from_height/models/Model2D.h
-  src/models/Model3D.cpp include/model_distance_from_height/models/Model3D.h
-  )
+
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -183,14 +167,11 @@ add_executable(${PROJECT_NAME}_node
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_gencfg)
-add_dependencies(${PROJECT_NAME}_node ${catkin_EXPORTED_TARGETS})
 
-## Specify libraries to link a library or executable target against
-target_link_libraries(${PROJECT_NAME}_node
-  ${OPENCV_LIBRARIES}
-  ${catkin_LIBRARIES}
-  )
+
+
+
+
 
 #############
 ## Install ##
@@ -232,7 +213,7 @@ target_link_libraries(${PROJECT_NAME}_node
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_model_distance_from_height.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_neural_network_detector.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

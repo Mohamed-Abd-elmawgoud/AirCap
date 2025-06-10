@@ -11,7 +11,7 @@ namespace neural_network_detector {
 
 static const int color_channels = 3;
 
-cv::Rect get_crop_area(const NeuralNetworkFeedback &latest_feedback, const cv::Size2i &original_resolution, const cv::Size2i &desired_resolution, float aspect_ratio, cv::projection2i& proj_crop, const bool timed_out=false) {
+cv::Rect get_crop_area(const neural_network_msgs::NeuralNetworkFeedback &latest_feedback, const cv::Size2i &original_resolution, const cv::Size2i &desired_resolution, float aspect_ratio, cv::projection2i& proj_crop, const bool timed_out=false) {
 
   // Feedback - zoom level
   if(timed_out || latest_feedback.ymin > original_resolution.height || latest_feedback.ymax < 0) {
@@ -120,10 +120,10 @@ NNDetector::NNDetector(char *host, char *port) : host_{host}, port_{port} {
   buffer_results_ = std::unique_ptr<uint8_t[]>(new uint8_t[length_final_img_]);
 
   // Publisher of detection messages
-  detection_pub_ = nh_.advertise<NeuralNetworkDetectionArray>(detections_topic, 5);
+  detection_pub_ = nh_.advertise<neural_network_msgs::NeuralNetworkDetectionArray>(detections_topic, 5);
 
   // Publisher of the amount of detection messages for each frame
-  detection_amount_pub_ = nh_.advertise<NeuralNetworkNumberOfDetections>(detection_amount_topic, 5);
+  detection_amount_pub_ = nh_.advertise<neural_network_msgs::NeuralNetworkNumberOfDetections>(detection_amount_topic, 5);
 
   // Image transport interface
   image_transport::ImageTransport it(nh_);
@@ -261,7 +261,7 @@ void NNDetector::imgCallback(const sensor_msgs::ImageConstPtr &msgp) {
     //ROS_INFO("Received %i detections",results->count);
 
     // Array to be published
-    NeuralNetworkDetectionArray detection_array_msg;
+    neural_network_msgs::NeuralNetworkDetectionArray detection_array_msg;
 
     // Header is the same as img msg
     detection_array_msg.header.frame_id = msgp->header.frame_id;
@@ -284,7 +284,7 @@ void NNDetector::imgCallback(const sensor_msgs::ImageConstPtr &msgp) {
 
       // Create and send one message for each detection above the score threshold
       // It is the job of the tracker to filter outliers
-      NeuralNetworkDetection detection_msg_;
+      neural_network_msgs::NeuralNetworkDetection detection_msg_;
       detection_msg_.header.frame_id = msgp->header.frame_id;
       detection_msg_.header.stamp = msgp->header.stamp;
       detection_msg_.detection_score = det.score;
@@ -342,7 +342,7 @@ void NNDetector::imgCallback(const sensor_msgs::ImageConstPtr &msgp) {
       detection_pub_.publish(detection_array_msg);
 
     // Publish the amount of detections
-    NeuralNetworkNumberOfDetections amount_msg;
+    neural_network_msgs::NeuralNetworkNumberOfDetections amount_msg;
     amount_msg.header.frame_id = msgp->header.frame_id;
     amount_msg.header.stamp = msgp->header.stamp;
     amount_msg.data = (uint16_t)detection_array_msg.detections.size();
@@ -397,7 +397,7 @@ void NNDetector::connectCallback() {
     ROS_INFO("Clients disconnected from debug topic - stopping debug");
 }
 
-void NNDetector::feedbackCallback(const neural_network_detector::NeuralNetworkFeedbackConstPtr &msg) {
+void NNDetector::feedbackCallback(const neural_network_msgs::NeuralNetworkFeedbackConstPtr &msg) {
   latest_feedback_ = *msg;
 }
 

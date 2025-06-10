@@ -87,7 +87,7 @@ namespace model_distance_from_height{
     tracker_sub_ = nh_.subscribe(tracker_topic, 5, &Projector::trackerCallback, this);
     object_pose_pub_ = nh_.advertise<geometry_msgs::PoseWithCovarianceStamped>(projected_object_topic, 10, false);
     camera_debug_pub_ = nh_.advertise<geometry_msgs::PoseWithCovarianceStamped>(camera_debug_topic, 10, false);
-    feedback_pub_ = nh_.advertise<neural_network_detector::NeuralNetworkFeedback>(feedback_topic, 5, true);
+    feedback_pub_ = nh_.advertise<neural_network_msgs::NeuralNetworkFeedback>(feedback_topic, 5, true);
 
 #ifdef DEBUG_PUBLISHERS
     // Debug publisher
@@ -102,7 +102,7 @@ namespace model_distance_from_height{
   }
 
 
-  void Projector::detectionCallback3D(const neural_network_detector::NeuralNetworkDetectionArrayConstPtr& msg){
+  void Projector::detectionCallback3D(const neural_network_msgs::NeuralNetworkDetectionArrayConstPtr& msg){
     ROS_ASSERT(msg != nullptr);
 
     if(detectBackwardsTimeJump())
@@ -234,7 +234,7 @@ namespace model_distance_from_height{
     if(detectBackwardsTimeJump())
       return ;
 
-    neural_network_detector::NeuralNetworkFeedback feedback_msg;
+    neural_network_msgs::NeuralNetworkFeedback feedback_msg;
     feedback_msg.header.stamp = msg->header.stamp;
     feedback_msg.debug_included = (uint8_t)true;
 

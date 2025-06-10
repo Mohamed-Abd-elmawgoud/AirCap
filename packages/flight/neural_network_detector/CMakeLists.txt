@@ -44,8 +44,8 @@ FIND_PACKAGE(catkin REQUIRED COMPONENTS
   roscpp
   sensor_msgs
   std_msgs
-  message_generation
   message_filters
+  neural_network_msgs
   )
 
 ## System dependencies are found with CMake's conventions
@@ -81,11 +81,6 @@ FIND_PACKAGE(catkin REQUIRED COMPONENTS
 ##   * uncomment the generate_messages entry below
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
-## Generate messages in the 'msg' folder
-ADD_MESSAGE_FILES(
-  DIRECTORY msg
-  FILES NeuralNetworkDetection.msg NeuralNetworkDetectionArray.msg NeuralNetworkFeedback.msg NeuralNetworkNumberOfDetections.msg
-)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -101,12 +96,6 @@ ADD_MESSAGE_FILES(
 #   Action2.action
 # )
 
-## Generate added messages and services with any dependencies listed here
-GENERATE_MESSAGES(
-  DEPENDENCIES
-  std_msgs
-  neural_network_detector
-)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -140,7 +129,7 @@ GENERATE_MESSAGES(
 CATKIN_PACKAGE(
   INCLUDE_DIRS include
   # LIBRARIES NNClient
-  CATKIN_DEPENDS message_runtime std_msgs
+  CATKIN_DEPENDS message_runtime std_msgs neural_network_msgs
   #  DEPENDS system_lib
 )
 
@@ -195,6 +184,8 @@ ADD_EXECUTABLE(${PROJECT_NAME}_overlay_only
 ## same as for the library above
 add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(${PROJECT_NAME}_overlay_only ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(${PROJECT_NAME}_node  ${catkin_EXPORTED_TARGETS})
+
 
 # Specify libraries to link a library or executable target against
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}_node

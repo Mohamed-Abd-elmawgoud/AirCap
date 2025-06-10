@@ -11,10 +11,10 @@
 #include <sensor_msgs/Image.h>
 #include <opencv2/core/core.hpp>
 #include <image_transport/image_transport.h>
-#include <neural_network_detector/NeuralNetworkDetection.h>
-#include <neural_network_detector/NeuralNetworkDetectionArray.h>
-#include <neural_network_detector/NeuralNetworkFeedback.h>
-#include <neural_network_detector/NeuralNetworkNumberOfDetections.h>
+#include <neural_network_msgs/NeuralNetworkDetection.h>
+#include <neural_network_msgs/NeuralNetworkDetectionArray.h>
+#include <neural_network_msgs/NeuralNetworkFeedback.h>
+#include <neural_network_msgs/NeuralNetworkNumberOfDetections.h>
 #include <cv/extensions/projection.h>
 
 namespace neural_network_detector {
@@ -34,7 +34,7 @@ typedef struct __attribute__ ((__packed__)) {
   detection_info detection[INT_MAX]; // over_allocated since variable length arrays are not allowed in C++
 } detection_results;
 
-cv::Rect get_crop_area(const NeuralNetworkFeedback &latest_feedback, const cv::Size2i &original_resolution, const cv::Size2i &desired_resolution, float aspect_ratio, cv::projection2i& proj_crop, bool timed_out);
+cv::Rect get_crop_area(const neural_network_msgs::NeuralNetworkFeedback &latest_feedback, const cv::Size2i &original_resolution, const cv::Size2i &desired_resolution, float aspect_ratio, cv::projection2i& proj_crop, bool timed_out);
 
 class NNDetector {
 private:
@@ -49,7 +49,7 @@ private:
   ros::Publisher detection_pub_;
   image_transport::Publisher debug_result_pub_;
   ros::Subscriber feedback_sub_;
-  neural_network_detector::NeuralNetworkFeedback latest_feedback_;
+  neural_network_msgs::NeuralNetworkFeedback latest_feedback_;
   ros::Duration timeout_;
   ros::Publisher detection_amount_pub_;
   double border_dropoff_{.05}; 
@@ -80,7 +80,7 @@ public:
   void connectCallback();
 
   // Feedback callback for updating latest feedback info
-  void feedbackCallback(const neural_network_detector::NeuralNetworkFeedbackConstPtr& msg);
+  void feedbackCallback(const neural_network_msgs::NeuralNetworkFeedbackConstPtr& msg);
 };
 
 }

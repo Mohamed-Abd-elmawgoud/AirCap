@@ -9,9 +9,9 @@
 #include <sensor_msgs/Image.h>
 #include <opencv2/core/core.hpp>
 #include <image_transport/image_transport.h>
-#include <neural_network_detector/NeuralNetworkDetection.h>
-#include <neural_network_detector/NeuralNetworkDetectionArray.h>
-#include <neural_network_detector/NeuralNetworkFeedback.h>
+#include <neural_network_msgs/NeuralNetworkDetection.h>
+#include <neural_network_msgs/NeuralNetworkDetectionArray.h>
+#include <neural_network_msgs/NeuralNetworkFeedback.h>
 #include <cv/extensions/projection.h>
 
 #include <message_filters/subscriber.h>
@@ -27,13 +27,13 @@ namespace neural_network_detector {
     private:
         ros::NodeHandle pnh_{"~"}, nh_;
         message_filters::Subscriber<sensor_msgs::Image> img_sub_;
-        message_filters::Subscriber<NeuralNetworkFeedback> feedback_sub_;
-        message_filters::Cache<NeuralNetworkFeedback> feedback_cache_;
-        message_filters::Subscriber<NeuralNetworkDetectionArray> detections_sub_;
+        message_filters::Subscriber<neural_network_msgs::NeuralNetworkFeedback> feedback_sub_;
+        message_filters::Cache<neural_network_msgs::NeuralNetworkFeedback> feedback_cache_;
+        message_filters::Subscriber<neural_network_msgs::NeuralNetworkDetectionArray> detections_sub_;
         std::unique_ptr< message_filters::TimeSequencer<sensor_msgs::Image> > pimg_delayer_;
-        std::unique_ptr< message_filters::TimeSynchronizer<NeuralNetworkDetectionArray, sensor_msgs::Image> > pimg_detection_sync_;
+        std::unique_ptr< message_filters::TimeSynchronizer<neural_network_msgs::NeuralNetworkDetectionArray, sensor_msgs::Image> > pimg_detection_sync_;
 
-        std::map<ros::Time, NeuralNetworkDetectionArray> stamp_detection_map_;
+        std::map<ros::Time, neural_network_msgs::NeuralNetworkDetectionArray> stamp_detection_map_;
 
         image_transport::Publisher overlay_pub_;
         cv::Mat mat_img_;
@@ -45,7 +45,7 @@ namespace neural_network_detector {
         bool save_video_flag_{false};
         double fps_{0};
 
-        void draw_detections(cv::Mat &, const NeuralNetworkDetectionArray *);
+        void draw_detections(cv::Mat &, const neural_network_msgs::NeuralNetworkDetectionArray *);
         void fade_out_unzoomed(cv::Mat &, const cv::Rect&);
         bool detectBackwardsTimeJump();
 
@@ -56,7 +56,7 @@ namespace neural_network_detector {
         // Constructor
         Overlay();
 
-        void registerNewDetectionImagePair(const NeuralNetworkDetectionArrayConstPtr &, const sensor_msgs::ImageConstPtr &);
+        void registerNewDetectionImagePair(const neural_network_msgs::NeuralNetworkDetectionArrayConstPtr &, const sensor_msgs::ImageConstPtr &);
         void imgCallback(const sensor_msgs::ImageConstPtr &);
 
         void startSubscribers();

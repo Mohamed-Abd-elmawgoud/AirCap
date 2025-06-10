@@ -65,11 +65,11 @@ void Overlay::startSubscribers() {
 
     // Detections subscriber and time-sync with images
     detections_sub_.subscribe(nh_, detections_topic, 20);
-    pimg_detection_sync_.reset(new message_filters::TimeSynchronizer<NeuralNetworkDetectionArray, sensor_msgs::Image>(detections_sub_, img_sub_, 20));
+    pimg_detection_sync_.reset(new message_filters::TimeSynchronizer<neural_network_msgs::NeuralNetworkDetectionArray, sensor_msgs::Image>(detections_sub_, img_sub_, 20));
     pimg_detection_sync_->registerCallback(boost::bind(&Overlay::registerNewDetectionImagePair, this, _1, _2));
 }
 
-void Overlay::registerNewDetectionImagePair(const NeuralNetworkDetectionArrayConstPtr &detp, const sensor_msgs::ImageConstPtr &imgp) {
+void Overlay::registerNewDetectionImagePair(const neural_network_msgs::NeuralNetworkDetectionArrayConstPtr &detp, const sensor_msgs::ImageConstPtr &imgp) {
     if(detectBackwardsTimeJump())
         return ;
 
@@ -158,7 +158,7 @@ void Overlay::imgCallback(const sensor_msgs::ImageConstPtr &msgp) {
     }
 }
 
-void Overlay::draw_detections(cv::Mat &img, const NeuralNetworkDetectionArray* pdetections) {
+void Overlay::draw_detections(cv::Mat &img, const neural_network_msgs::NeuralNetworkDetectionArray* pdetections) {
 
     static const float alpha_dec = 0.05;
     static float alpha = 0.5;
@@ -166,8 +166,8 @@ void Overlay::draw_detections(cv::Mat &img, const NeuralNetworkDetectionArray* p
     // Save pairs of points (min, max) for drawing a rectangle
     static std::vector< std::pair<cv::Point2i, cv::Point2i> > v_points;
 
-    static const auto det_min = [](const NeuralNetworkDetection& d) -> cv::Point2i{ return cv::Point2i(d.xmin, d.ymin); };
-    static const auto det_max = [](const NeuralNetworkDetection& d) -> cv::Point2i{ return cv::Point2i(d.xmax, d.ymax); };
+    static const auto det_min = [](const neural_network_msgs::NeuralNetworkDetection& d) -> cv::Point2i{ return cv::Point2i(d.xmin, d.ymin); };
+    static const auto det_max = [](const neural_network_msgs::NeuralNetworkDetection& d) -> cv::Point2i{ return cv::Point2i(d.xmax, d.ymax); };
 
     cv::Mat overlay;
     img.copyTo(overlay);

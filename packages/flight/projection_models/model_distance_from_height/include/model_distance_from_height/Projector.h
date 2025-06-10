@@ -10,8 +10,8 @@
 #include "models/Model3D.h"
 
 #include <ros/ros.h>
-#include <neural_network_detector/NeuralNetworkDetectionArray.h>
-#include <neural_network_detector/NeuralNetworkFeedback.h>
+#include <neural_network_msgs/NeuralNetworkDetectionArray.h>
+#include <neural_network_msgs/NeuralNetworkFeedback.h>
 #include <geometry_msgs/TransformStamped.h>
 #include <tf2_ros/transform_listener.h>
 #include <image_geometry/pinhole_camera_model.h>
@@ -54,7 +54,7 @@ namespace model_distance_from_height {
   public:
     Projector();
 
-    void detectionCallback3D(const neural_network_detector::NeuralNetworkDetectionArrayConstPtr &msg);
+    void detectionCallback3D(const neural_network_msgs::NeuralNetworkDetectionArrayConstPtr &msg);
     void cameraInfoCallback(const sensor_msgs::CameraInfoConstPtr &msg);
     void trackerCallback(const geometry_msgs::PoseWithCovarianceStampedConstPtr &msg);
 
