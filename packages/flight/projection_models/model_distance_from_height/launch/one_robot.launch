@@ -4,7 +4,7 @@
     <arg name="robotID" default="1"/>
     <arg name="namespace" default="machine_$(arg robotID)"/>
 
-    <arg name="detections_topic" default="object_detections"/>
+    <arg name="detections_topic" default="/person_detections"/>
     <arg name="height_model/mean" default="1.690"/>
     <arg name="height_model/var" default="1.0"/>
 
@@ -12,7 +12,7 @@
 
     <arg name="tracker_topic" default="target_tracker/pose"/>
     <arg name="offset_topic" default="target_tracker/offset"/>
-    <arg name="feedback_topic" default="object_detections/feedback"/>
+    <arg name="feedback_topic" default="/neural_network_feedback"/>
 
     <arg name="uncertainty_scale/head" default="2.0"/>
     <arg name="uncertainty_scale/feet" default="2.0"/>
